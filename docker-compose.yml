@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+    microscopy-metadata-service:
+        restart: always
+        container_name: chemical-properties-service
+        image: leanda/microscopy-metadata-service
+        build:
+            context: .
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs/
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp/
+        ports:
+        - 8986:8086
+        networks:
+        - osdr-net-ext
+            
+networks:
+    osdr-net-ext:
+        external:
+            name: osdr-sys-net
