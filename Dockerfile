@@ -6,7 +6,7 @@ RUN mvn -Pdocker package
 FROM openjdk:10.0.2-jre-slim-sid
 VOLUME /logs
 RUN mkdir /temps
-ENV SPRING_BOOT_APP microscopy-metadata-service.jar
+ENV SPRING_BOOT_APP leanda-microscopy-metadata-service.jar
 ENV SPRING_BOOT_APP_JAVA_OPTS -Xmx256m -XX:NativeMemoryTracking=summary
 WORKDIR /app
 RUN apt-get update && apt-get install -y curl

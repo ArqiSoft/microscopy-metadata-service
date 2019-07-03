@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import com.arqisoft.microscopymetadata.commands.ExtractMicroscopyMetadata;
+import com.arqisoft.microscopymetadata.domain.MicroscopyMetadataExtractor;
 import com.arqisoft.microscopymetadata.events.MicroscopyMetadataExtracted;
 import com.arqisoft.microscopymetadata.events.MicroscopyMetadataExtractionFailed;
 import com.sds.storage.BlobInfo;
@@ -17,6 +18,13 @@ import org.springframework.stereotype.Component;
 import com.npspot.jtransitlight.consumer.ReceiverBusControl;
 import com.npspot.jtransitlight.publisher.IBusControl;
 import com.sds.storage.BlobStorage;
+import loci.common.services.ServiceFactory;
+import loci.formats.IFormatReader;
+import loci.formats.ImageReader;
+import loci.formats.meta.IMetadata;
+import loci.formats.services.OMEXMLService;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import sds.messaging.callback.MessageProcessor;
 
 @Component
@@ -27,7 +35,6 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
     ReceiverBusControl receiver;
     IBusControl bus;
     BlobStorage storage;
-
 
     @Autowired
     public ExtractMicroscopyMetadataCommandProcessor(ReceiverBusControl receiver, IBusControl bus, BlobStorage storage) {
@@ -46,8 +53,44 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
                 throw new FileNotFoundException(String.format("Blob with Id %s not found in bucket %s",
                         new Guid(message.getBlobId()), message.getBucket()));
             }
-            Map<String, Object> metadata = calculateMetadata();
+
+            File directory = new File(System.getenv("OSDR_TEMP_FILES_FOLDER"));
+            File tempFile = File.createTempFile("temp", "." + FilenameUtils.getExtension(blob.getFileName()).toLowerCase(), directory);
+
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                IOUtils.copy(storage.getFileStream(new Guid(message.getBlobId()), message.getBucket()), out);
+            }
+
+            String id = tempFile.getCanonicalPath();
+
+            Map<String, Object> metadata = new HashMap<>();
+            ServiceFactory factory = new ServiceFactory();
+            OMEXMLService service = factory.getInstance(OMEXMLService.class);
+            IMetadata meta = service.createOMEXMLMetadata();
+            IFormatReader reader = new ImageReader();
+            reader.setMetadataStore(meta);
+            reader.setId(id);
+            int series = 0;
+            int seriesCount = reader.getSeriesCount();
+            if (series < seriesCount) {
+                reader.setSeries(series);
+            }
+
+            series = reader.getSeries();
+            Map<String, Object> result = new HashMap<>();
+            result.put("Image series", series + " of " + seriesCount);
+            metadata.putAll(MicroscopyMetadataExtractor.printPixelDimensions(reader));
+
+            metadata.putAll(MicroscopyMetadataExtractor.printPhysicalDimensions(meta, series));
+
+            metadata.putAll(MicroscopyMetadataExtractor.readPhysicalSize(id));
+
+            metadata.putAll(MicroscopyMetadataExtractor.printLensNA(id));
+
+            metadata.putAll(MicroscopyMetadataExtractor.calculateSubresolution(id));
+
             publishSuccessEvent(message, metadata);
+            
         } catch (Exception exception) {
             publishFailureEvent(message, exception.getMessage());
         }
@@ -60,7 +103,7 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
         event.setUserId(message.getUserId());
         event.setTimeStamp(getTimestamp());
         event.setMetadata(metadata);
-        
+
         event.setCorrelationId(message.getCorrelationId());
 
         LOGGER.debug("Publishing event {}", event);
@@ -80,8 +123,8 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
 
         bus.publish(event);
     }
-    
-    private Map<String, Object> calculateMetadata(){
+
+    private Map<String, Object> calculateMetadata() {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("Experimenter", "John Doe");
         result.put("ExperimenterGroup", "John Doe Ltd.");
@@ -99,7 +142,7 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
         result.put("Image properties -> number of time points", 1586);
         result.put("Image properties -> number of channels", 852);
         result.put("Image properties -> umber of scan areas/platesNotes", 3);
-        
+
         return result;
     }
 
@@ -107,6 +150,5 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
         //("yyyy-MM-dd'T'HH:mm:ss'Z'")
         return LocalDateTime.now().toString();
     }
-
 
 }
