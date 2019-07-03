@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.npspot.jtransitlight.consumer.ReceiverBusControl;
 import com.npspot.jtransitlight.publisher.IBusControl;
 import com.sds.storage.BlobStorage;
+import java.nio.file.Files;
 import loci.common.services.ServiceFactory;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
@@ -78,7 +79,9 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
 
             series = reader.getSeries();
             Map<String, Object> result = new HashMap<>();
+            
             result.put("Image series", series + " of " + seriesCount);
+            
             metadata.putAll(MicroscopyMetadataExtractor.printPixelDimensions(reader));
 
             metadata.putAll(MicroscopyMetadataExtractor.printPhysicalDimensions(meta, series));
@@ -90,6 +93,8 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
             metadata.putAll(MicroscopyMetadataExtractor.calculateSubresolution(id));
 
             publishSuccessEvent(message, metadata);
+            
+            Files.delete(tempFile.toPath());
             
         } catch (Exception exception) {
             publishFailureEvent(message, exception.getMessage());
