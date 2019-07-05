@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>ArqiSoft</Company>
+    <Product>Leanda</Product>
+    <Copyright></Copyright>
+    <PackageId>Leanda.Microscopy.Metadata.Domain</PackageId>
+    <Authors>ArqiSoft</Authors>
+    <Description>Microscopy files metadata extractor</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags></PackageTags>    
+    <Description>Microscopy metadata domain models</Description>    
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    
+    <Version>0.1.0</Version>    
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
