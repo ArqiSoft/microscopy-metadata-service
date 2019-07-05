@@ -2,10 +2,7 @@ version: '3'
 
 services:
     microscopy-metadata-service:
-        restart: always
-        container_name: microscopy-metadata-service
-        image: leanda/microscopy-metadata-service:latest
-        build:
+        image: leanda/microscopy-metadata-service:latest        build:
             context: .
         environment:
         - TZ=EST
