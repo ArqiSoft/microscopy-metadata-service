@@ -1,0 +1,1 @@
+docker build -t leanda/microscopy-metadata-tests:latest .

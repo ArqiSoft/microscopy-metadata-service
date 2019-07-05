@@ -1,4 +1,4 @@
-# Chemical Properties Service
+# Microscopy Metadata Service
 
 ## System Requirements
 

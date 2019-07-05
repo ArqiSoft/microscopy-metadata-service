@@ -3,8 +3,8 @@ version: '3'
 services:
     microscopy-metadata-service:
         restart: always
-        container_name: chemical-properties-service
-        image: leanda/microscopy-metadata-service
+        container_name: microscopy-metadata-service
+        image: leanda/microscopy-metadata-service:latest
         build:
             context: .
         environment:
