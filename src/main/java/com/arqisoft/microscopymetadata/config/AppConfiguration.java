@@ -27,7 +27,7 @@ import com.sds.storage.gridfs.GridFSBlobStorage;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan("com.leanda")
+@ComponentScan("com.arqisoft")
 public class AppConfiguration  {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppConfiguration.class);
 

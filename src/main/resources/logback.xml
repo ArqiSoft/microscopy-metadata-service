@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-<property name="logPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS XXX} [%level] [v@project.version@.@build.number@] %logger{30} %msg%n"/>
+<property name="logPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS XXX} [%level] %msg%n"/>
 <property name="logEncoding" value="UTF-8"/>
 <property name="logFileNamePattern" value="${OSDR_LOG_FOLDER}/@project.artifactId@-%d{yyyyMMdd}_%i.log"/>
 
@@ -27,7 +27,7 @@
     <appender-ref ref="fileAppender"/>
     <appender-ref ref="STDOUT"/>
 </logger>
-<logger name="com.leanda" level="debug" additivity="false">
+<logger name="com.arqisoft" level="debug" additivity="false">
     <appender-ref ref="fileAppender"/>
     <appender-ref ref="STDOUT"/>
 </logger>
