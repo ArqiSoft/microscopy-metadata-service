@@ -20,7 +20,7 @@ namespace Leanda.Microscopy.Metadata.Tests
             return await harness.BlobStorage.AddFileAsync(Path.GetFileName(path), source, "application/octet-stream", bucket);
         }
 
-        public static async Task PublishCalculateChemicalProperties(this MicroscopyMetadataTestHarness harness, Guid id, Guid blobId, string bucket, Guid userId, Guid correlationId)
+        public static async Task PublishExtractMetadataCommand(this MicroscopyMetadataTestHarness harness, Guid id, Guid blobId, string bucket, Guid userId, Guid correlationId)
         {
             await harness.BusControl.Publish<ExtractMicroscopyMetadata>(new
             {
@@ -32,9 +32,9 @@ namespace Leanda.Microscopy.Metadata.Tests
             });
         }
 
-        public static async Task CalculateChemicalProperties(this MicroscopyMetadataTestHarness harness, Guid id, Guid blobId, string bucket, Guid userId, Guid correlationId)
+        public static async Task ExtractMicroscopyMetadata(this MicroscopyMetadataTestHarness harness, Guid id, Guid blobId, string bucket, Guid userId, Guid correlationId)
         {
-            await harness.PublishCalculateChemicalProperties(id, blobId, bucket, userId, correlationId);
+            await harness.PublishExtractMetadataCommand(id, blobId, bucket, userId, correlationId);
 
             harness.WaitWhileProcessingFinished(correlationId);
         }

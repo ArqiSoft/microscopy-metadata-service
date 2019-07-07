@@ -50,7 +50,7 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
         try {
             BlobInfo blob = storage.getFileInfo(new Guid(message.getBlobId()), message.getBucket());
 
-            if (blob == null) {
+            if (blob.getContentType() == null) {
                 throw new FileNotFoundException(String.format("Blob with Id %s not found in bucket %s",
                         new Guid(message.getBlobId()), message.getBucket()));
             }

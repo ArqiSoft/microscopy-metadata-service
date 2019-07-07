@@ -39,7 +39,7 @@ namespace Leanda.Microscopy.Metadata.Tests
             Log.Logger = new LoggerConfiguration()
                 .CreateLogger();
 
-            Log.Information("Staring ChemicalProperties tests");
+            Log.Information("Staring Microscopy Metadata tests");
 
             var services = new ServiceCollection();
 
@@ -97,7 +97,7 @@ namespace Leanda.Microscopy.Metadata.Tests
                 .Where(m => m.Id == id).ToList().SingleOrDefault();
         }
 
-        public MicroscopyMetadataExtractionFailed GetChemicalPropertiesCalculationFailedEvent(Guid id)
+        public MicroscopyMetadataExtractionFailed GetMicroscopyMetadataExtractionFailedEvent(Guid id)
         {
             return Received
                 .ToList()

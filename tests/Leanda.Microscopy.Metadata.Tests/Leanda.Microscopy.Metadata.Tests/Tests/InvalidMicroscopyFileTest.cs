@@ -18,7 +18,7 @@ namespace Leanda.Microscopy.Metadata.Tests
         {
             Bucket = UserId.ToString ();
             BlobId = Guid.NewGuid();
-            harness.CalculateChemicalProperties (Id, BlobId, Bucket, UserId, CorrelationId).Wait ();
+            harness.ExtractMicroscopyMetadata (Id, BlobId, Bucket, UserId, CorrelationId).Wait ();
         }
     }
 
@@ -40,7 +40,7 @@ namespace Leanda.Microscopy.Metadata.Tests
         [Fact]
         public void MicroscopyMetadataExtracting_ValidFile_ShouldFail()
         { 
-           var evn = Harness.GetChemicalPropertiesCalculationFailedEvent(Id);
+           var evn = Harness.GetMicroscopyMetadataExtractionFailedEvent(Id);
            evn.Should().NotBeNull();
            evn.UserId.Should().Be(UserId);
            evn.CorrelationId.Should().Be(CorrelationId);

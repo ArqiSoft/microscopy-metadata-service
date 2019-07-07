@@ -17,7 +17,7 @@ namespace Leanda.Microscopy.Metadata.Tests
         {
             Bucket = UserId.ToString ();
             BlobId = harness.UploadResource (Bucket, "Nikon_BF007.nd2").Result;
-            harness.CalculateChemicalProperties (Id, BlobId, Bucket, UserId, CorrelationId).Wait ();
+            harness.ExtractMicroscopyMetadata (Id, BlobId, Bucket, UserId, CorrelationId).Wait ();
         }
     }
 
