@@ -1,0 +1,63 @@
+﻿version: '3.4'
+
+services:
+  rabbitmq:
+    image: leanda/rabbitmq
+    hostname: "rabbitmq-leanda"
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=leanda
+    ports:
+      - "8282:15672"
+      - "5672:5672"
+    networks:
+      - leanda-net
+
+  mongo:
+    image: mongo:3.6
+    ports:
+      - "27017:27017"
+    networks:
+      - leanda-net
+
+  microscopy-metadata:
+      container_name: microscopy-metadata
+      image: leanda/microscopy-metadata-service:${TAG_VERSION-latest}
+      entrypoint: /bin/bash
+      environment:
+      - TZ=EST
+      - OSDR_LOG_FOLDER=/tmp/logs
+      - OSDR_TEMP_FILES_FOLDER=/tmp/temp
+      - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/leanda
+      - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+      - QUEUE_PREFETCH_SIZE=9
+      - EXECUTOR_THREAD_COUNT=3
+      command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar leanda-microscopy-metadata-service.jar
+      volumes:
+      - ${OSDR_LOG_FOLDER}:/tmp/logs
+      - ${OSDR_TEMP_FILES_FOLDER}:/tmp/temp
+      networks:
+      - leanda-net
+      depends_on:
+      - rabbitmq
+      - mongo
+
+  tests:
+      container_name: microscopy-metadata-tests
+      image: leanda/microscopy-metadata-tests:${TAG_VERSION-latest}
+      entrypoint: /bin/bash
+      environment:
+        - OSDR_LOG_FOLDER=${OSDR_LOG_FOLDER}
+        - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
+        - OSDR_GRID_FS=mongodb://mongo:27017/osdr_dev
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/leanda
+      command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- dotnet vstest ./Leanda.Microscopy.Metadata.Tests.dll /logger:"trx;LogFileName=chemical-properties-results-${BUILD_NUMBER}.xml" /ResultsDirectory:/results
+      volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - /tmp/tests/leanda-microscopy-metadata-service/results:/tmp/tests/leanda-microscopy-metadata-service/results
+      networks:
+        - leanda-net
+      depends_on:
+        - microscopy-metadata
+
+networks:
+  leanda-net:
