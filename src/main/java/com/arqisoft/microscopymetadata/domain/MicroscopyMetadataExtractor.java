@@ -90,10 +90,20 @@ public class MicroscopyMetadataExtractor {
         Length physicalSizeY = meta.getPixelsPhysicalSizeY(series);
         Length physicalSizeZ = meta.getPixelsPhysicalSizeZ(series);
         Map<String, Object> result = new HashMap<>();
-        //System.out.println("Physical dimensions:");
-        result.put("X spacing", physicalSizeX.value() + " " + physicalSizeX.unit().getSymbol());
-        result.put("Y spacing", physicalSizeY.value() + " " + physicalSizeY.unit().getSymbol());
-        result.put("Z spacing", physicalSizeZ.value() + " " + physicalSizeZ.unit().getSymbol());
+        if (physicalSizeX != null )
+        {
+            result.put("X spacing", physicalSizeX.value() + " " + physicalSizeX.unit().getSymbol());
+        }
+        
+        if (physicalSizeY != null)
+        {
+            result.put("Y spacing", physicalSizeY.value() + " " + physicalSizeY.unit().getSymbol());
+        }
+        
+        if(physicalSizeZ != null)
+        {
+            result.put("Z spacing", physicalSizeZ.value() + " " + physicalSizeZ.unit().getSymbol());
+        }
         return result;
     }
 
