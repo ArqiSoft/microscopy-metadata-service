@@ -71,9 +71,7 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
             IFormatReader reader = new ImageReader();
             reader.setMetadataStore(meta);
             reader.setId(id);
-            int series = reader.getSeriesCount();
-
-            series = reader.getSeries();
+            int series = reader.getSeries();
             
             metadata.putAll(MicroscopyMetadataExtractor.printPixelDimensions(reader));
 
@@ -94,7 +92,9 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
                 throw new Exception("Could not retrieve emy metadata.");
             }
             
-            Files.delete(tempFile.toPath());
+            reader.close();
+            
+            tempFile.delete();
             
         } catch (Exception exception) {
             publishFailureEvent(message, exception.getMessage());

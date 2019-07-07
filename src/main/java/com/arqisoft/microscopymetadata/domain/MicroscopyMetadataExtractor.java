@@ -28,14 +28,14 @@ public class MicroscopyMetadataExtractor {
                 reader.setMetadataStore(omeMeta);
                 reader.setId(inputFile);
                 final Unit<Length> targetUnit = UNITS.MICROMETER;
-                
+
                 for (int image = 0; image < omeMeta.getImageCount(); image++) {
                     final Length physSizeX = omeMeta.getPixelsPhysicalSizeX(image);
                     final Length physSizeY = omeMeta.getPixelsPhysicalSizeY(image);
                     final Length physSizeZ = omeMeta.getPixelsPhysicalSizeZ(image);
-                    
+
                     System.out.println("Physical calibration - Image: " + image);
-                    
+
                     if (physSizeX != null) {
                         final Length convertedSizeX = new Length(physSizeX.value(targetUnit), targetUnit);
                         result.put("Physical calibration - Image X", convertedSizeX.value() + " " + convertedSizeX.unit().getSymbol());
@@ -55,30 +55,37 @@ public class MicroscopyMetadataExtractor {
                                 + " = " + convertedSizeZ.value() + " " + convertedSizeZ.unit().getSymbol());
                     }
                 }
+                reader.close();
             }
-            
+
         } catch (FormatException | IOException ex) {
-            Logger.getLogger(MicroscopyMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         return result;
     }
 
     public static Map<String, Object> printPixelDimensions(IFormatReader reader) {
-        // output dimensional information
-        int sizeX = reader.getSizeX();
-        int sizeY = reader.getSizeY();
-        int sizeZ = reader.getSizeZ();
-        int sizeC = reader.getSizeC();
-        int sizeT = reader.getSizeT();
-        int imageCount = reader.getImageCount();
         Map<String, Object> result = new HashMap<>();
-        //result.put("Pixel dimensions:");
-        result.put("Width", sizeX);
-        result.put("Height", sizeY);
-        result.put("Focal planes", sizeZ);
-        result.put("Channels", sizeC);
-        result.put("Timepoints", sizeT);
-        result.put("Total planes", imageCount);
+
+        try {
+            // output dimensional information
+            int sizeX = reader.getSizeX();
+            int sizeY = reader.getSizeY();
+            int sizeZ = reader.getSizeZ();
+            int sizeC = reader.getSizeC();
+            int sizeT = reader.getSizeT();
+            int imageCount = reader.getImageCount();
+            reader.close();
+            //result.put("Pixel dimensions:");
+            result.put("Width", sizeX);
+            result.put("Height", sizeY);
+            result.put("Focal planes", sizeZ);
+            result.put("Channels", sizeC);
+            result.put("Timepoints", sizeT);
+            result.put("Total planes", imageCount);
+        } catch(Exception e)  {
+
+        }
         return result;
     }
 
@@ -90,18 +97,15 @@ public class MicroscopyMetadataExtractor {
         Length physicalSizeY = meta.getPixelsPhysicalSizeY(series);
         Length physicalSizeZ = meta.getPixelsPhysicalSizeZ(series);
         Map<String, Object> result = new HashMap<>();
-        if (physicalSizeX != null )
-        {
+        if (physicalSizeX != null) {
             result.put("X spacing", physicalSizeX.value() + " " + physicalSizeX.unit().getSymbol());
         }
-        
-        if (physicalSizeY != null)
-        {
+
+        if (physicalSizeY != null) {
             result.put("Y spacing", physicalSizeY.value() + " " + physicalSizeY.unit().getSymbol());
         }
-        
-        if(physicalSizeZ != null)
-        {
+
+        if (physicalSizeZ != null) {
             result.put("Z spacing", physicalSizeZ.value() + " " + physicalSizeZ.unit().getSymbol());
         }
         return result;
@@ -111,28 +115,28 @@ public class MicroscopyMetadataExtractor {
 
         Map<String, Object> result = new HashMap<>();
         try {
-            // configure reader
-            IFormatReader reader = new ImageReader();
-            ServiceFactory factory = new ServiceFactory();
-            OMEXMLService service = factory.getInstance(OMEXMLService.class);
-            IMetadata meta = service.createOMEXMLMetadata();
-            reader.setMetadataStore(meta);
-            System.out.println("Initializing file: " + id);
-            reader.setId(id); // parse metadata
-            // output metadata values
-            int instrumentCount = meta.getInstrumentCount();
-            result.put("Instrument(s) associated with this file", instrumentCount);
-            for (int i = 0; i < instrumentCount; i++) {
-                int objectiveCount = meta.getObjectiveCount(i);
-                result.put("Instrument #" + i + " [" + meta.getInstrumentID(i) + "]: ", objectiveCount + " objective(s) found");
-                for (int o = 0; o < objectiveCount; o++) {
-                    Double lensNA = meta.getObjectiveLensNA(i, o);
-                    result.put("\tObjective #" + o + " [" + meta.getObjectiveID(i, o) + "]: LensNA", lensNA);
+            try (IFormatReader reader = new ImageReader()) {
+                ServiceFactory factory = new ServiceFactory();
+                OMEXMLService service = factory.getInstance(OMEXMLService.class);
+                IMetadata meta = service.createOMEXMLMetadata();
+                reader.setMetadataStore(meta);
+                System.out.println("Initializing file: " + id);
+                reader.setId(id); // parse metadata
+                // output metadata values
+                int instrumentCount = meta.getInstrumentCount();
+                result.put("Instrument(s) associated with this file", instrumentCount);
+                for (int i = 0; i < instrumentCount; i++) {
+                    int objectiveCount = meta.getObjectiveCount(i);
+                    result.put("Instrument #" + i + " [" + meta.getInstrumentID(i) + "]: ", objectiveCount + " objective(s) found");
+                    for (int o = 0; o < objectiveCount; o++) {
+                        Double lensNA = meta.getObjectiveLensNA(i, o);
+                        result.put("\tObjective #" + o + " [" + meta.getObjectiveID(i, o) + "]: LensNA", lensNA);
+                    }
                 }
             }
-            
+
         } catch (DependencyException | FormatException | IOException | ServiceException ex) {
-            Logger.getLogger(MicroscopyMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         return result;
     }
@@ -145,24 +149,24 @@ public class MicroscopyMetadataExtractor {
                 System.out.println("Initializing file: " + id);
                 reader.setId(id); // parse metadata
                 int seriesCount = reader.getSeriesCount();
-                
+
                 result.put("Series count", seriesCount);
-                
+
                 for (int series = 0; series < seriesCount; series++) {
                     reader.setSeries(series);
                     int resolutionCount = reader.getResolutionCount();
-                    
+
                     result.put("Resolution count for series #" + series, resolutionCount);
-                    
+
                     for (int r = 0; r < resolutionCount; r++) {
                         reader.setResolution(r);
                         result.put("Resolution #" + r + " dimensions", reader.getSizeX() + " x " + reader.getSizeY());
                     }
                 }
             }
-            
+
         } catch (FormatException | IOException ex) {
-            Logger.getLogger(MicroscopyMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         return result;
     }
