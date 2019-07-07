@@ -1,0 +1,22 @@
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+os:
+  - linux
+
+env:
+  global:
+    - DATE=`TZ=America/New_York date "+%Y-%m-%d-%H%M"`
+    - DATE_TM=`TZ=America/New_York date "+%Y-%m-%d %H:%M"`
+    - DOCKER_IMAGE="leanda/microscopy-metadata"
+
+script:
+  - docker build -t $DOCKER_IMAGE:$DATE -t $DOCKER_IMAGE:latest .
+
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push $DOCKER_IMAGE # Pushes both date and latest

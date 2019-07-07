@@ -2,7 +2,7 @@ version: '3'
 
 services:
     microscopy-metadata-service:
-        image: leanda/microscopy-metadata-service:latest        
+        image: leanda/microscopy-metadata:latest
         build:
             context: .
         environment:
