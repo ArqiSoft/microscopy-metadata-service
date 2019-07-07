@@ -1,7 +1,7 @@
 FROM maven:3.5.4-jdk-10-slim AS builder
 COPY . /usr/src/microscopy-metadata-service
 WORKDIR /usr/src/microscopy-metadata-service
-RUN mvn -Pdocker package -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+RUN mvn -Pdocker package
 
 FROM openjdk:10.0.2-jre-slim-sid
 VOLUME /logs
