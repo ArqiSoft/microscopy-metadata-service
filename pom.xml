@@ -33,16 +33,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-<!--            <exclusions>
+            <exclusions>
                 <exclusion>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-to-slf4j</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
-            </exclusions> -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -231,20 +227,20 @@
             <artifactId>tika-app</artifactId>
             <version>1.17</version>
             <type>jar</type>
-             <exclusions>
-            <exclusion>
-                <groupId>log4j</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>org.slf4j</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ome</groupId>
@@ -337,38 +333,4 @@
             <url>${nexus.release.url}</url>
         </repository>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>local</id>
-            <properties>
-                <build.number>local</build.number>
-                <build.timestamp>${maven.build.timestamp}</build.timestamp>
-                <build.scm.hash></build.scm.hash>
-                <build.scm.author></build.scm.author>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>dev</id>
-        </profile>
-        <profile>
-            <id>uat</id>
-        </profile>
-        <profile>
-            <id>prod</id>
-        </profile>
-        <profile>
-            <id>docker</id>
-            <build>
-                <finalName>${project.artifactId}</finalName>
-            </build>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-        </profile>
-    </profiles>
-
 </project>
