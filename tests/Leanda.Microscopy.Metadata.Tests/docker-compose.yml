@@ -21,7 +21,7 @@ services:
 
   microscopy-metadata:
       container_name: microscopy-metadata
-      image: leanda/microscopy-metadata-service:${TAG_VERSION-latest}
+      image: leanda/microscopy-metadata:${TAG_VERSION-latest}
       entrypoint: /bin/bash
       environment:
       - TZ=EST
