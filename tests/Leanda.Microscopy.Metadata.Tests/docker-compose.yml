@@ -32,9 +32,6 @@ services:
       - QUEUE_PREFETCH_SIZE=9
       - EXECUTOR_THREAD_COUNT=3
       command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar leanda-microscopy-metadata-service.jar
-      volumes:
-      - ${OSDR_LOG_FOLDER}:/tmp/logs
-      - ${OSDR_TEMP_FILES_FOLDER}:/tmp/temp
       networks:
       - leanda-net
       depends_on:
@@ -52,7 +49,6 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/leanda
       command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- dotnet vstest ./Leanda.Microscopy.Metadata.Tests.dll /logger:"trx;LogFileName=chemical-properties-results-${BUILD_NUMBER}.xml" /ResultsDirectory:/results
       volumes:
-        - ${OSDR_LOG_FOLDER}:/logs
         - /tmp/tests/leanda-microscopy-metadata-service/results:/tmp/tests/leanda-microscopy-metadata-service/results
       networks:
         - leanda-net
