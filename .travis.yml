@@ -15,7 +15,8 @@ env:
     - DOCKER_TESTS_IMAGE="leanda/microscopy-metadata-tests"
 
 script:
-  - docker build -t $DOCKER_IMAGE:$DATE -t $DOCKER_IMAGE:latest .
+  # - docker build -t $DOCKER_IMAGE:$DATE -t $DOCKER_IMAGE:latest .
+  - dir
   - docker build -t $DOCKER_TESTS_IMAGE:latest -f tests/Leanda.Microscopy.Metadata.Tests/Dockerfile .
   - yes | cp -rf tests/Leanda.Microscopy.Metadata.Tests/.env.travis-ci tests/Leanda.Microscopy.Metadata.Tests/.env
   - cd tests/Leanda.Microscopy.Metadata.Tests && docker-compose up --abort-on-container-exit
