@@ -56,6 +56,10 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
             }
 
             File directory = new File(System.getenv("OSDR_TEMP_FILES_FOLDER"));
+            if (!directory.exists()){
+                directory.mkdirs();
+            }
+            
             File tempFile = File.createTempFile("temp", "." + FilenameUtils.getExtension(blob.getFileName()).toLowerCase(), directory);
 
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
