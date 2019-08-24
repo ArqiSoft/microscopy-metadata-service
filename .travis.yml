@@ -16,9 +16,9 @@ env:
 
 script:
   - docker build -t $DOCKER_IMAGE:$DATE -t $DOCKER_IMAGE:latest .
-  # - cd tests/Leanda.Microscopy.Metadata.Tests && docker build -t $DOCKER_TESTS_IMAGE:latest .
-  # - yes | cp -rf Leanda.Microscopy.Metadata.Tests/.env.travis-ci Leanda.Microscopy.Metadata.Tests/.env
-  # - cd Leanda.Microscopy.Metadata.Tests && docker-compose up --abort-on-container-exit
+  - cd tests/Leanda.Microscopy.Metadata.Tests && docker build -t $DOCKER_TESTS_IMAGE:latest .
+  - yes | cp -rf Leanda.Microscopy.Metadata.Tests/.env.travis-ci Leanda.Microscopy.Metadata.Tests/.env
+  - cd Leanda.Microscopy.Metadata.Tests && docker-compose up --abort-on-container-exit
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
