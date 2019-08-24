@@ -27,7 +27,7 @@ namespace Leanda.Microscopy.Metadata.Tests
         public IBusControl BusControl { get { return _serviceProvider.GetService<IBusControl>(); } }
 
         private List<ExceptionInfo> Faults = new List<ExceptionInfo>();
-        public ReceivedMessageList Received { get; } = new ReceivedMessageList(TimeSpan.FromSeconds(30));
+        public ReceivedMessageList Received { get; } = new ReceivedMessageList(TimeSpan.FromSeconds(60));
 
         public MicroscopyMetadataTestHarness()
         {
