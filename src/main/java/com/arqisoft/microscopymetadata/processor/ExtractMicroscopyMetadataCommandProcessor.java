@@ -72,20 +72,23 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
             ServiceFactory factory = new ServiceFactory();
             OMEXMLService service = factory.getInstance(OMEXMLService.class);
             IMetadata meta = service.createOMEXMLMetadata();
-            IFormatReader reader = new ImageReader();
-            reader.setMetadataStore(meta);
-            reader.setId(id);
-            int series = reader.getSeries();
+            try (IFormatReader reader = new ImageReader()) {
+                reader.setMetadataStore(meta);
+                reader.setId(id);
+                int series = reader.getSeries();
+                
+                metadata.putAll(MicroscopyMetadataExtractor.printPixelDimensions(reader));
+                
+                metadata.putAll(MicroscopyMetadataExtractor.printPhysicalDimensions(meta, series));
+                
+                metadata.putAll(MicroscopyMetadataExtractor.readPhysicalSize(id));
+                
+                metadata.putAll(MicroscopyMetadataExtractor.printLensNA(id));
+                
+                metadata.putAll(MicroscopyMetadataExtractor.calculateSubresolution(id));
+            }
             
-            metadata.putAll(MicroscopyMetadataExtractor.printPixelDimensions(reader));
-
-            metadata.putAll(MicroscopyMetadataExtractor.printPhysicalDimensions(meta, series));
-
-            metadata.putAll(MicroscopyMetadataExtractor.readPhysicalSize(id));
-
-            metadata.putAll(MicroscopyMetadataExtractor.printLensNA(id));
-
-            metadata.putAll(MicroscopyMetadataExtractor.calculateSubresolution(id));
+            tempFile.delete();
             
             if(!metadata.isEmpty())
             {
@@ -96,14 +99,9 @@ public class ExtractMicroscopyMetadataCommandProcessor implements MessageProcess
                 throw new Exception("Could not retrieve emy metadata.");
             }
             
-            reader.close();
-            
-            tempFile.delete();
-            
         } catch (Exception exception) {
             publishFailureEvent(message, exception.getMessage());
         }
-
     }
 
     private void publishSuccessEvent(ExtractMicroscopyMetadata message, Map<String, Object> metadata) {
