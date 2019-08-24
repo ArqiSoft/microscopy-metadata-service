@@ -38,7 +38,7 @@ namespace Leanda.Microscopy.Metadata.Tests
         }
 
         [Fact]
-        public void MicroscopyMetadataExtracting_ValidFile_ShouldFail()
+        public void MicroscopyMetadataExtracting_InvalidFile_ShouldFail()
         { 
            var evn = Harness.GetMicroscopyMetadataExtractionFailedEvent(Id);
            evn.Should().NotBeNull();
