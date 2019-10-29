@@ -1,5 +1,7 @@
 # Microscopy Metadata Service
 
+[![Build Status](https://travis-ci.org/ArqiSoft/microscopy-metadata-service.svg?branch=master)](https://travis-ci.org/ArqiSoft/microscopy-metadata-service)
+
 ## System Requirements
 
 Java 1.8, Maven 3.x
