@@ -1,6 +1,6 @@
 # Microscopy Metadata Service
 
-[![Build Status](https://travis-ci.org/ArqiSoft/microscopy-metadata-service.svg?branch=master)](https://travis-ci.org/ArqiSoft/microscopy-metadata-service)
+[![Build Status](https://travis-ci.com/ArqiSoft/microscopy-metadata-service.svg?branch=master)](https://travis-ci.com/ArqiSoft/microscopy-metadata-service)
 
 ## System Requirements
 
